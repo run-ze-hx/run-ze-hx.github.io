@@ -1,0 +1,145 @@
+@import '../variables.less';
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(17, 24, 39, 0.8);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  transition: all 0.3s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  
+  &.scrolled {
+    background: rgba(17, 24, 39, 0.95);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+  }
+  
+  &__content {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; // 靠右
+    padding: 1rem 0;
+    gap: 1.5rem; // nav 和 search 之间间距
+  }
+  
+  &__logo {
+    margin-right: auto; // logo 靠左
+    display: flex;
+    align-items: center;
+    gap: @spacing-sm;
+    
+    .logo-icon {
+      background: @primary-color;
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+  }
+  
+  &__title {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  &__nav {
+    display: flex;
+    gap: 1.2rem; // nav 内部间距略缩小
+    align-items: center;
+    
+    @media (max-width: @breakpoint-tablet) {
+      display: none;
+    }
+  }
+  
+  &__link {
+    color: @text-gray;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    
+    &:hover {
+      color: @primary-color;
+    }
+  }
+  
+  &__search {
+    position: relative;
+    margin-left: 0.5rem; // nav 和 search 间距更小
+    
+    @media (max-width: @breakpoint-tablet) {
+      display: none;
+    }
+    
+    &-input {
+      background: rgba(31, 41, 55, 0.8);
+      border: 1px solid @border-color;
+      border-radius: 2rem;
+      padding: 0.5rem 1rem 0.5rem 2.5rem;
+      color: @text-light;
+      width: 16rem;
+      transition: all 0.3s ease;
+      
+      &:focus {
+        outline: none;
+        border-color: @primary-color;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+      
+      &::placeholder {
+        color: @text-dark;
+      }
+    }
+    
+    &-icon {
+      position: absolute;
+      left: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: @text-dark;
+    }
+  }
+  
+  &__mobile-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: @text-light;
+    font-size: 1.5rem;
+    cursor: pointer;
+    
+    @media (max-width: @breakpoint-tablet) {
+      display: block;
+    }
+  }
+  
+  &__mobile-menu {
+    display: none;
+    background: rgba(31, 41, 55, 0.95);
+    backdrop-filter: blur(10px);
+    padding: @spacing-md 0;
+    
+    @media (max-width: @breakpoint-tablet) {
+      display: block;
+    }
+    
+    .header__nav {
+      display: flex;
+      flex-direction: column;
+      gap: @spacing-sm;
+    }
+    
+    .header__search {
+      display: block;
+      margin-top: @spacing-md;
+      
+      &-input {
+        width: 100%;
+      }
+    }
+  }
+}

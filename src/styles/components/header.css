@@ -1,0 +1,129 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(17, 24, 39, 0.8);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  transition: all 0.3s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.header.scrolled {
+  background: rgba(17, 24, 39, 0.95);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+}
+.header__content {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 1rem 0;
+  gap: 1.5rem;
+}
+.header__logo {
+  margin-right: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.header__logo .logo-icon {
+  background: #3b82f6;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+.header__title {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+.header__nav {
+  display: flex;
+  gap: 1.2rem;
+  align-items: center;
+}
+@media (max-width: 1024px) {
+  .header__nav {
+    display: none;
+  }
+}
+.header__link {
+  color: #d1d5db;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+.header__link:hover {
+  color: #3b82f6;
+}
+.header__search {
+  position: relative;
+  margin-left: 0.5rem;
+}
+@media (max-width: 1024px) {
+  .header__search {
+    display: none;
+  }
+}
+.header__search-input {
+  background: rgba(31, 41, 55, 0.8);
+  border: 1px solid #374151;
+  border-radius: 2rem;
+  padding: 0.5rem 1rem 0.5rem 2.5rem;
+  color: #f9fafb;
+  width: 16rem;
+  transition: all 0.3s ease;
+}
+.header__search-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+.header__search-input::placeholder {
+  color: #6b7280;
+}
+.header__search-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;
+}
+.header__mobile-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: #f9fafb;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+@media (max-width: 1024px) {
+  .header__mobile-toggle {
+    display: block;
+  }
+}
+.header__mobile-menu {
+  display: none;
+  background: rgba(31, 41, 55, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 1rem 0;
+}
+@media (max-width: 1024px) {
+  .header__mobile-menu {
+    display: block;
+  }
+}
+.header__mobile-menu .header__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.header__mobile-menu .header__search {
+  display: block;
+  margin-top: 1rem;
+}
+.header__mobile-menu .header__search-input {
+  width: 100%;
+}
