@@ -1,0 +1,97 @@
+---
+title: "Event Loop：从调用栈到任务队列"
+level: "玄·高级"
+excerpt: "单线程、调用栈、微任务、宏任务——四个概念把 JS 异步讲清楚，也解释了 setState 为什么不是同步的。"
+date: "2026-05-24"
+tags: ["JavaScript", "Event Loop", "Async"]
+readTime: 10
+---
+
+## JS 为什么是单线程
+
+JS 出生时是浏览器脚本语言，单线程避免了 DOM 操作的竞态——两个线程同时 `appendChild` 同一个节点，浏览器不知道听谁的。
+
+这个「缺陷」反而成就了 JS：**没有锁，没有死锁，没有竞态**。
+
+## 调用栈
+
+```js
+function a() { b(); }
+function b() { console.log('hi'); }
+a();
+```
+
+调用顺序：`a()` 入栈 → `b()` 入栈 → `console.log` 入栈 → 逐个出栈。
+
+如果调用栈溢出（递归无终止），就是 `RangeError: Maximum call stack size exceeded`。
+
+## 任务队列
+
+JS 把任务分两类：
+
+| 类型 | 触发 | 优先级 |
+|---|---|---|
+| 微任务（microtask） | `Promise.then/catch/finally`、`queueMicrotask`、`MutationObserver` | **每一轮事件循环结束前全部清空** |
+| 宏任务（macrotask） | `setTimeout`、`setInterval`、`MessageChannel`、I/O、UI 事件 | **每一轮事件循环只执行一个** |
+
+## 执行顺序口诀
+
+> **同步 → 微任务 → 宏任务（一个）→ 微任务 → 宏任务（一个）→ ...**
+
+```js
+console.log(1);
+setTimeout(() => console.log(2));
+Promise.resolve().then(() => console.log(3));
+console.log(4);
+
+// 输出：1 4 3 2
+```
+
+## 一个常被忽略的事实
+
+`async function` 里的 `await` 之后的代码，是微任务。
+
+```js
+async function main() {
+  console.log(1);
+  await Promise.resolve();
+  console.log(2);  // 这里是微任务
+}
+main();
+console.log(3);
+// 输出：1 3 2
+```
+
+## 为什么 setState 不是同步
+
+```js
+function handleClick() {
+  setCount(1);
+  setCount(2);
+  console.log(count);  // 还是旧值
+}
+```
+
+React 把这次更新的两个 setState 批量合并成一次渲染，渲染时机是**微任务末尾**——和事件循环完美对齐。
+
+React 18 之前，这个批量更新只在事件回调里生效；React 18 之后，所有更新都自动批量（automatic batching）。
+
+## 防抖的本质
+
+```js
+function debounce(fn, delay) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), delay);
+  };
+}
+```
+
+每次触发都 `clearTimeout`——也就是清掉之前排进宏任务队列的回调。只有最后一次触发后 delay 毫秒内没有新触发，回调才会真正跑。
+
+## 关联
+
+- Promise 与异步编程
+- React State 与渲染机制
+- JS 错误捕获全景图

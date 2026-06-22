@@ -1,0 +1,101 @@
+---
+title: "Axios 拦截器：一份关注点分离的范本"
+level: "地·中级"
+excerpt: "请求拦截器管注入、响应拦截器管分流——一份生产级的 Axios 封装可以教完所有关注点分离。"
+date: "2026-05-28"
+tags: ["Axios", "HTTP", "Engineering"]
+readTime: 9
+---
+
+## 两类拦截器
+
+```ts
+axios.interceptors.request.use(onReq, onReqError);
+axios.interceptors.response.use(onRes, onResError);
+```
+
+请求拦截器从外向内执行（后注册的先跑），响应拦截器从内向外（先注册的先跑）——经典洋葱模型。
+
+## 请求拦截器的职责
+
+只做一件事：**给即将发出的请求加东西**。
+
+```ts
+function onReq(config: InternalAxiosRequestConfig) {
+  const token = useTokenStore.getState().token;
+  if (token) config.headers.set('Authorization', `Bearer ${token}`);
+
+  // 业务接口和文件下载超时不同
+  if (config.url?.startsWith('/file/')) {
+    config.timeout = 5 * 60 * 1000;
+  } else {
+    config.timeout = 10_000;
+  }
+
+  return config;
+}
+```
+
+不该做的事：错误处理、UI 反馈、路由跳转——这些都是响应拦截器的活。
+
+## 响应拦截器的职责
+
+做三件事：**HTTP 状态分流、业务 code 分流、错误兜底**。
+
+```ts
+function onRes(res: AxiosResponse) {
+  // 2xx 但业务层报错
+  if (res.data?.code !== 0 && !IGNORED_CODES.has(res.data?.code)) {
+    message.error(res.data.message);
+    return Promise.reject(res.data);
+  }
+  return res.data.data;
+}
+
+function onResError(err: AxiosError) {
+  if (!err.response) {
+    // 网络错误 / 超时
+    message.error('网络异常，请检查连接');
+  } else {
+    const status = err.response.status;
+    if (status === 401) {
+      useTokenStore.getState().clear();
+      window.location.href = '/login';
+    } else if (status >= 500) {
+      message.error('服务异常，请稍后重试');
+    }
+  }
+  return Promise.reject(err);
+}
+```
+
+## 业务 code 白名单
+
+不是所有非 0 code 都该弹错误。评标系统里 `code: 1003` 表示「评标已结束，无法修改」——这是业务态，应该由页面自己决定怎么显示。
+
+```ts
+const IGNORED_CODES = new Set([1003, 1007, 1024]);
+```
+
+## 两条铁律
+
+**铁律 1：拦截器不能耦合具体业务**。拦截器只看 `code`、`status`，不看业务对象。
+
+**铁律 2：拦截器永远要 return 或 reject**。直接 throw 会让上层不知道发生了什么。
+
+## 项目结构
+
+```
+lib/
+├── http.ts             # axios 实例 + 拦截器
+├── http.types.ts       # Response / Code 枚举
+└── http.constants.ts   # IGNORED_CODES、TIMEOUT 等
+```
+
+这份结构 3 年没动过，业务方换了几轮——这就是好架构的标志。
+
+## 关联
+
+- Token 管理
+- 前端全局架构
+- JS 错误捕获全景图

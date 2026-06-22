@@ -1,0 +1,70 @@
+---
+title: "React Fiber：一次渲染的旅行"
+level: "天·高级"
+excerpt: "从浏览器单线程出发，推演 Fiber 为什么不能是数组，以及它如何让 React 可中断、可恢复。"
+date: "2026-06-15"
+tags: ["React", "Fiber", "Architecture"]
+readTime: 12
+---
+
+> 本文是「在架构与像素之间」系列的开篇。从一个最根本的问题出发：浏览器是单线程的，React 凭什么做到不卡？
+
+## 1. 为什么不是数组
+
+React 15 的 `VirtualDOM` 是一棵用对象嵌套出来的树。Diff 过程是**递归**的，一旦开始就停不下来。
+
+如果树有 10000 个节点，这一次 diff 就要吃掉 100ms 以上——期间主线程被锁死，用户输入、动画、`scroll` 全部丢失。这就是著名的「React 15 大列表掉帧」问题。
+
+React 团队的结论是：**递归不能中断，那就换成可中断的链表遍历。**
+
+## 2. Fiber 是什么
+
+Fiber 节点是一个普通的 JS 对象，但它额外携带三个指针：
+
+```ts
+interface Fiber {
+  return: Fiber | null;  // 父节点
+  child: Fiber | null;   // 第一个子节点
+  sibling: Fiber | null; // 下一个兄弟节点
+}
+```
+
+有了这三个指针，原本需要递归的树遍历，就改写成了一个 `while` 循环——每次循环只处理一个节点，然后**让出控制权**。
+
+## 3. 让出控制权靠的是什么
+
+`Scheduler`（调度器）内部使用了 Message Channel 实现 `timeSlice`：
+
+```ts
+function workLoop() {
+  while (nextUnitOfWork && !shouldYield()) {
+    nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
+  }
+  if (nextUnitOfWork) {
+    requestIdleCallback(workLoop);  // 简化示意
+  }
+}
+```
+
+每一帧留出 5ms 给渲染，剩下的时间 React 拿来 diff。这就是 React 16+ 在大列表下不再掉帧的根本原因。
+
+## 4. 双缓冲机制
+
+Fiber 树有两份：
+
+- `current`：当前屏幕上显示的
+- `workInProgress`：内存里正在构建的
+
+更新时，React 在 `workInProgress` 上做 diff、打 effectTag。等全部 build 完，一次性 commit 到 DOM——这就是 React 18  `concurrent` 模式的物理基础。
+
+## 5. 一个具体的例子
+
+评标系统中有一个「评审桌面」，一次会渲染 30+ 个可拖拽卡片。React 15 下，拖拽会触发整树重渲染，掉帧明显。
+
+迁到 React 18 + Fiber 后，配合 `useDeferredValue` 把非紧急的状态更新降级为 transition，拖拽时的 FPS 从 24 提升到 58。
+
+## 关联
+
+- 浏览器渲染管线
+- Event Loop 与任务队列
+- React State 与渲染机制

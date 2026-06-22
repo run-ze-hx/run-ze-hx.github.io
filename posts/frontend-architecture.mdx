@@ -1,0 +1,78 @@
+---
+title: "前端全局架构：数据流转的地图"
+level: "天·中级"
+excerpt: "拦截器、路由守卫、角色守卫、Store 同步——从用户点击到数据落屏的完整链路，是一张可以反复回看的地图。"
+date: "2026-06-05"
+tags: ["Architecture", "React", "Router"]
+readTime: 11
+---
+
+## 一张地图
+
+评标系统的数据流转，简化后是这张图：
+
+```
+        ┌─────────┐
+用户 →  │ Router  │ → 路由守卫 → 角色重定向
+        └────┬────┘
+             ↓
+        ┌─────────┐
+        │  Page   │ ←─ Store (Zustand, 持久化)
+        └────┬────┘                  ↑
+             ↓                       │
+        ┌─────────┐    请求拦截器     │
+        │  Hook   │ ────────────→ Axios ──→ 后端
+        └─────────┘                  │
+             ↓                       │
+        ┌─────────┐    响应拦截器     │
+        │ Action  │ ←────────────────┘
+        └─────────┘
+             ↓
+          渲染 / 路由跳转 / 错误兜底
+```
+
+## 入口：路由守卫
+
+`<Route element={<RequireAuth/>}>` 包住需要登录的页面。组件内 `useEffect` 检查 Token，失败就 `navigate('/login', { state: { from } })`。
+
+```tsx
+function RequireAuth() {
+  const token = useTokenStore(s => s.token);
+  const loc = useLocation();
+  if (!token) return <Navigate to="/login" state={{ from: loc }} replace />;
+  return <Outlet />;
+}
+```
+
+**角色路由**：在路由守卫里再叠一层角色判断。比如 `/expert/*` 只允许 `expert` 角色进入，其它角色 302 到 `/403`。
+
+## 中间：拦截器两条职责
+
+- **请求拦截器**：注入 Token、JSON-bigint 解析配置、超时差异化（业务接口 10s，下载 5min）
+- **响应拦截器**：HTTP 状态分流 + 业务 code 分流 + 错误 toast 兜底
+
+关键设计：**业务 code 一定要有白名单**。不是所有非 0 code 都该弹错误——比如「正在评标中，无法修改」这种业务态，要交给页面自己处理 UI。
+
+## 出口：Store 同步
+
+响应数据回到 Store 后，所有订阅该 Store 的组件自动 re-render。但要注意：**Store 不能塞太多**。
+
+```ts
+// ❌ 把整个 user 对象塞进 Store
+useUserStore.setState({ user: response.user });
+
+// ✅ 拆出 token、profile、preferences 三个 Store
+useTokenStore.setState({ token: response.token });
+```
+
+拆开的好处：组件按需订阅，profile 变化不会触发只关心 token 的组件 re-render。
+
+## 一条隐性线：i18n 与路由
+
+每次切换语言，`useI18nStore` 更新，整个 React 树 re-render——这是预期。但要注意：路由路径本身不应该带语言前缀（`/zh/posts` 是反模式），否则切换语言时要改 URL，会触发额外的路由跳转。
+
+## 关联
+
+- React Router 路由与权限控制
+- Axios 封装与拦截器设计
+- Zustand 状态管理
