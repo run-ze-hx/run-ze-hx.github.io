@@ -1,0 +1,91 @@
+---
+title: "从 DOM 到屏幕：浏览器渲染管线全解"
+level: "天·高级"
+excerpt: "HTML/CSS/JS 进入浏览器后，经历了 DOM/CSSOM/Render Tree/Layout/Paint/Composite 六个阶段，理解每一步是性能优化的起点。"
+date: "2026-06-08"
+tags: ["Browser", "Rendering", "Performance"]
+readTime: 14
+---
+
+## 一条流水线
+
+浏览器把一份 HTML 渲染到屏幕，要经过六个阶段：
+
+```
+HTML  →  DOM
+                  ↘
+                    Render Tree  →  Layout  →  Paint  →  Composite  →  屏幕
+CSS   →  CSSOM    ↗
+```
+
+每一个阶段都对应一类性能问题。下面逐个拆开。
+
+## 1. DOM / CSSOM 构建
+
+解析 HTML 时遇到 `<script>` 会**同步阻塞**（除非加 `async` / `defer`）。CSS 解析默认阻塞渲染——这就是为什么要把关键 CSS 内联、把非关键 CSS 推迟。
+
+**实际项目里的坑**：评标系统首屏白屏 500ms，原因是 antd 的全量 CSS（~500KB）阻塞了渲染。改为按需引入 + critical CSS 内联后，FCP 降到 90ms。
+
+## 2. Render Tree
+
+DOM 和 CSSOM 合并成 Render Tree。**不可见的节点（`display: none`）不在 Render Tree 里**，但 `visibility: hidden` 还在——后者参与 Layout，前者不参与。
+
+## 3. Layout（回流）
+
+计算每个节点的几何位置。触发条件：
+
+- 添加/删除可见元素
+- 改变 `width / height / padding / margin / position / float`
+- 窗口 resize
+- 读取 `offsetWidth / scrollTop / getComputedStyle`（强制同步布局）
+
+最后这一类最阴险：在循环里读取这些属性会触发 **layout thrashing**，一次循环做 N 次回流。
+
+```js
+// 反例
+els.forEach(el => {
+  el.style.width = container.offsetWidth + 'px';  // 读 + 写 + 读 + 写...
+});
+```
+
+## 4. Paint（重绘）
+
+把 Layout 后的盒子画成像素。触发：`color / background / box-shadow / outline` 等纯视觉属性。
+
+**重绘比重流便宜，但仍然有代价。**
+
+## 5. Composite（合成）
+
+把各个 Paint 出来的图层合并成最终画面。GPU 参与。
+
+关键事实：**`transform` 和 `opacity` 只触发 Composite**。这就是为什么动画永远应该用 `transform: translate`，而不是 `top/left`。
+
+```css
+/* ❌ 触发 Layout + Paint + Composite */
+.move { transition: top 0.3s; top: 100px; }
+
+/* ✅ 只触发 Composite */
+.move { transition: transform 0.3s; transform: translateY(100px); }
+```
+
+## 6. requestAnimationFrame
+
+`rAF` 是浏览器在下一次 Paint 之前调用的回调。任何视觉相关的 JS 都应该用它做节流。
+
+```js
+function onScroll() {
+  if (ticking) return;
+  ticking = true;
+  requestAnimationFrame(() => {
+    update();
+    ticking = false;
+  });
+}
+window.addEventListener('scroll', onScroll, { passive: true });
+```
+
+## 关联
+
+- React Fiber 与 Diff 算法
+- Event Loop 与任务队列
+- CSS 布局体系

@@ -1,0 +1,72 @@
+---
+title: "JS 错误捕获全景图：三道墙与两条铁律"
+level: "玄·高级"
+excerpt: "try/catch 抓不到 async 抛错、Promise 链尾漏掉 then、window.onerror 和 unhandledrejection 各管一边——一张图理清错误捕获的完整拓扑。"
+date: "2026-06-12"
+tags: ["JavaScript", "Error", "Browser"]
+readTime: 10
+---
+
+## 三道墙
+
+JS 里捕获错误有三道墙：
+
+| 墙 | 捕获什么 | 用什么 |
+|---|---|---|
+| 第一道 | 同步代码 | `try/catch` |
+| 第二道 | 异步回调 / Promise | `.catch()` / `try + await` |
+| 第三道 | 全局兜底 | `window.onerror` / `addEventListener('unhandledrejection')` |
+
+关键事实：**第一道墙抓不到第二道墙的错误。**
+
+```js
+try {
+  setTimeout(() => { throw new Error('boom'); }, 0);
+} catch (e) {
+  // 永远进不来
+}
+```
+
+因为 `setTimeout` 的回调在下一个事件循环里才执行，那时 `try/catch` 早已离开调用栈。
+
+## 两条铁律
+
+### 铁律 1：错误沿调用栈向上冒泡
+
+直到遇到第一个 `catch`。如果调用栈里一个 catch 都没有，就触发 `window.onerror`。
+
+### 铁律 2：Promise 错误沿 .then 链向下冒泡
+
+直到遇到第一个 `.catch`。如果整条链没有 `.catch`，就触发 `unhandledrejection`。
+
+```js
+Promise.resolve()
+  .then(() => { throw new Error('boom'); })
+  .then(v => console.log(v));  // 不执行，但错误被"吞"到 unhandledrejection
+```
+
+## 项目里的错误流
+
+评标系统前端的错误兜底链：
+
+1. Axios 拦截器：业务层错误（HTTP 4xx/5xx）—— 业务 toast
+2. React ErrorBoundary：组件渲染错误 —— 降级 UI
+3. `window.onerror` / `unhandledrejection`：未知错误 —— 上报 + 灰度 toast
+
+第三层最容易漏，因为很多人不知道 async function 里 `throw` 出去后，如果调用方不 `.catch`，就是 unhandledrejection。
+
+## 一个边界陷阱
+
+```js
+button.addEventListener('click', async () => {
+  throw new Error('click boom');
+});
+```
+
+这个错误会被事件循环当成"未处理的 Promise rejection"。要兜底，必须在 listener 里 `.catch`，或者全局监听 `unhandledrejection`。
+
+## 关联
+
+- Event Loop 与任务队列
+- Promise 与异步编程
+- Axios 封装与拦截器设计

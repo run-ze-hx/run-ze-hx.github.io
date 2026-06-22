@@ -1,0 +1,23 @@
+node_modules
+dist
+dist-ssr
+*.local
+.DS_Store
+.env
+.env.*
+!.env.example
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.log
+npm-debug.log*
+.turbo
+.cache
+
+# TS composite build artifacts
+vite.config.js
+vite.config.d.ts
+*.tsbuildinfo
+
+# Claude Code local
+.claude/

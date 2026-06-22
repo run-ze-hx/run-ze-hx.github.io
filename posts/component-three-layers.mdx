@@ -1,0 +1,100 @@
+---
+title: "组件三层拆分：页面/业务/通用的边界感"
+level: "地·中级"
+excerpt: "页面层管编排、业务层管领域逻辑、通用层管纯表现——这套边界让组件不会随业务增长而失控。"
+date: "2026-05-20"
+tags: ["React", "Architecture", "Components"]
+readTime: 8
+---
+
+## 三层各自干什么
+
+| 层 | 职责 | 示例 |
+|---|---|---|
+| 页面 | 编排（拉数据、组合业务组件、路由） | `EvaluationPage` |
+| 业务 | 领域逻辑（评标评分、供应商选择） | `ExpertScoringForm` |
+| 通用 | 纯表现（按钮、卡片、空态） | `CyberButton` |
+
+判断组件属于哪层，问一个问题：**「如果换一个完全不同的业务，这个组件还能用吗？」**
+
+- 能用 → 通用层
+- 改改字段能用 → 业务层
+- 完全不相关 → 页面层
+
+## 一个具体的例子
+
+评标系统中「专家评分表」组件的演进：
+
+```tsx
+// ❌ 初版：一切都堆在页面里
+function EvaluationPage() {
+  const [scores, setScores] = useState({});
+  const handleScore = (row, col, val) => { ... 60 行评分逻辑 ... };
+  return <table>... 100 行 JSX 直接写在页面里 ...</table>;
+}
+
+// ✅ 重构后：三层各司其职
+function EvaluationPage() {
+  const { scores, setScore } = useEvaluationStore();
+  return <ExpertScoringForm scores={scores} onChange={setScore} />;
+}
+
+// 业务层
+function ExpertScoringForm({ scores, onChange }) {
+  const { rows, cols, validate } = useExpertScoring(scores);
+  return (
+    <Form>
+      {rows.map(r => <ScoreRow key={r.id} columns={cols} value={scores[r.id]} />)}
+      <CyberButton onClick={() => validate()}>提交</CyberButton>
+    </Form>
+  );
+}
+
+// 通用层
+function ScoreRow({ columns, value }) {
+  return columns.map(c => <input value={value[c]} ... />);
+}
+```
+
+## 抽 Hook 的信号
+
+什么时候应该把逻辑从组件里抽成 Hook？三个信号：
+
+1. 同一份逻辑在多个组件里复制粘贴
+2. 组件的 `useState` / `useEffect` 超过 5 个
+3. 组件里有「领域黑话」（比如「评标委员会」、「技术分」、「商务分」）——说明它该是业务组件，逻辑该进 Hook
+
+## Compound Components 模式
+
+通用层的一个有用模式——把一组组件作为子组件暴露，让消费者自由组合：
+
+```tsx
+function CyberCard({ children }) {
+  return <div className="cyber-card">{children}</div>;
+}
+CyberCard.Header = ({ children }) => <div className="cyber-card__header">{children}</div>;
+CyberCard.Body = ({ children }) => <div className="cyber-card__body">{children}</div>;
+CyberCard.Footer = ({ children }) => <div className="cyber-card__footer">{children}</div>;
+
+// 消费者
+<CyberCard>
+  <CyberCard.Header>评审结果</CyberCard.Header>
+  <CyberCard.Body>...</CyberCard.Body>
+</CyberCard>
+```
+
+好处：消费者拥有完整的 JSX 结构控制权，组件库不需要为每种组合提供一个新 API。
+
+## 什么时候不要拆
+
+- 组件只有 30 行 → 不用拆
+- 逻辑只用一次 → 不用抽 Hook
+- 业务组件里只有 1-2 个通用组件 → 不用刻意增加一层
+
+**过度拆分比欠拆分更糟糕**——每一层都是一次心智跳跃。
+
+## 关联
+
+- React 组件通信与逻辑复用
+- Zustand 状态管理
+- 把握职责与顺应规律（管理心得）
