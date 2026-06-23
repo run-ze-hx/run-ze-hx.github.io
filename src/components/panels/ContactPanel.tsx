@@ -13,23 +13,23 @@ const channels: Channel[] = [
   {
     key: 'contact.github',
     label: 'GitHub',
-    handle: '@yanglinfeng',
-    href: 'https://github.com/',
+    handle: '@run-ze-hx',
+    href: 'https://github.com/run-ze-hx',
     icon: 'github',
     accent: '#00F0FF',
   },
   {
     key: 'contact.email',
     label: 'Email',
-    handle: 'yanglinfeng@example.com',
-    href: 'mailto:yanglinfeng@example.com',
+    handle: '2161957114@qq.com',
+    href: 'mailto:2161957114@qq.com',
     icon: 'mail',
     accent: '#FF2EA0',
   },
   {
     key: 'contact.weixin',
     label: 'WeChat',
-    handle: 'ylinfeng_dev',
+    handle: 'yang',
     href: '#',
     icon: 'wechat',
     accent: '#2DFFB9',
@@ -128,46 +128,6 @@ export default function ContactPanel() {
           </li>
         ))}
       </ul>
-
-      <div className="mx-5 my-3 p-3 rounded-lg border border-cyan/15 bg-cyan/[0.03] flex items-center gap-3">
-        {/* Mini QR — programmatic */}
-        <div className="w-14 h-14 rounded bg-void p-1.5 grid place-items-center">
-          <svg viewBox="0 0 21 21" className="w-full h-full">
-            <rect width="21" height="21" fill="transparent" />
-            {/* Fake QR cells for vibe */}
-            {Array.from({ length: 21 }).map((_, y) =>
-              Array.from({ length: 21 }).map((_, x) => {
-                const filled = (x * 7 + y * 11 + ((x * y) % 5)) % 3 === 0;
-                if (!filled) return null;
-                return (
-                  <rect
-                    key={`${x}-${y}`}
-                    x={x}
-                    y={y}
-                    width={1}
-                    height={1}
-                    fill={x < 7 && y < 7 ? '#00F0FF' : x > 13 && y < 7 ? '#FF2EA0' : x < 7 && y > 13 ? '#7B2FFF' : '#fff'}
-                  />
-                );
-              }),
-            )}
-            {/* Position markers */}
-            <rect x="0" y="0" width="7" height="7" fill="none" stroke="#00F0FF" strokeWidth="1" />
-            <rect x="14" y="0" width="7" height="7" fill="none" stroke="#FF2EA0" strokeWidth="1" />
-            <rect x="0" y="14" width="7" height="7" fill="none" stroke="#7B2FFF" strokeWidth="1" />
-          </svg>
-        </div>
-        <div className="flex-1">
-          <div className="font-mono text-[10px] text-cyan/80 tracking-widest">
-            SCAN · CONNECT
-          </div>
-          <div className="font-mono text-[9px] text-white/40 mt-1 leading-snug">
-            扫码加我微信
-            <br />
-            备注来自网站
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
