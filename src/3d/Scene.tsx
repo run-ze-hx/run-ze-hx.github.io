@@ -1,9 +1,12 @@
 import { Canvas } from '@react-three/fiber';
 import { AdaptiveDpr, AdaptiveEvents, Preload } from '@react-three/drei';
+import { EffectComposer, Bloom, ChromaticAberration } from '@react-three/postprocessing';
+import { BlendFunction } from 'postprocessing';
+import { Vector2 } from 'three';
 import StarDust from './StarDust';
 import Ring from './Ring';
-import Ribbon from './Ribbon';
-import CentralObject from './CentralObject';
+import DnaHelix from './DnaHelix';
+import SdfCentral from './SdfCentral';
 
 export default function Scene() {
   return (
@@ -51,32 +54,32 @@ export default function Scene() {
       </group>
 
       <group>
-        <Ribbon count={400} length={28} color="#FF8AC8" curveAmp={0.6} baseY={2.5} />
-        <Ribbon
-          count={350}
-          length={26}
-          color="#7AF5FF"
-          curveAmp={0.8}
-          curveFreq={1.3}
-          baseY={-2}
-          baseZ={1}
-        />
-        <Ribbon
-          count={300}
-          length={30}
-          color="#B891FF"
-          curveAmp={0.5}
-          curveFreq={0.7}
-          baseY={0}
-          baseZ={-2}
-        />
+        <DnaHelix count={400} rungCount={40} length={28} color="#FF8AC8" radius={0.7} twist={2.5} baseY={2.5} />
+        <DnaHelix count={350} rungCount={35} length={26} color="#7AF5FF" radius={0.6} twist={3.0} baseY={-2} baseZ={1} />
+        <DnaHelix count={300} rungCount={30} length={30} color="#B891FF" radius={0.8} twist={2.0} baseY={0} baseZ={-2} />
       </group>
 
-      <CentralObject />
+      <SdfCentral />
 
       <Preload all />
       <AdaptiveDpr pixelated />
       <AdaptiveEvents />
+
+      <EffectComposer multisampling={0} enableNormalPass={false}>
+        <Bloom
+          intensity={0.9}
+          luminanceThreshold={0.15}
+          luminanceSmoothing={0.4}
+          mipmapBlur
+          radius={0.7}
+        />
+        <ChromaticAberration
+          blendFunction={BlendFunction.NORMAL}
+          offset={new Vector2(0.0008, 0.0012)}
+          radialModulation={false}
+          modulationOffset={0}
+        />
+      </EffectComposer>
     </Canvas>
   );
 }
