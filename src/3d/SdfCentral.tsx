@@ -15,12 +15,12 @@ export default function SdfCentral() {
   const uniforms = useMemo(
     () => ({
       uTime: { value: 0 },
-      uDistort: { value: 0.25 },
+      uDistort: { value: 0.08 },
       uResolution: { value: new THREE.Vector2(size.width, size.height) },
       uAspect: { value: size.width / size.height },
-      uColorA: { value: new THREE.Color('#00F0FF') },
-      uColorB: { value: new THREE.Color('#FF2EA0') },
-      uColorC: { value: new THREE.Color('#7B2FFF') },
+      uColorA: { value: new THREE.Color('#B8860B') },
+      uColorB: { value: new THREE.Color('#FFD700') },
+      uColorC: { value: new THREE.Color('#FFF4C8') },
       uCamPos: { value: new THREE.Vector3(0, 0, 3.5) },
     }),
     [size],
@@ -29,7 +29,7 @@ export default function SdfCentral() {
   useFrame((_, delta) => {
     if (!matRef.current) return;
     matRef.current.uniforms.uTime.value += delta;
-    const targetDistort = routeMode === 'article' ? 0.05 : 0.25;
+    const targetDistort = routeMode === 'article' ? 0.02 : 0.08;
     matRef.current.uniforms.uDistort.value = THREE.MathUtils.lerp(
       matRef.current.uniforms.uDistort.value,
       targetDistort,

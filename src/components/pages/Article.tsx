@@ -6,6 +6,7 @@ import { useI18nStore } from '@store/i18nStore';
 import { getPost, posts } from '@content/posts';
 import CodeBlock from '@components/ui/CodeBlock';
 import TableOfContents from '@components/ui/TableOfContents';
+import ReadingProgress from '@components/ui/ReadingProgress';
 
 const mdxComponents = {
   code: (props: { children?: React.ReactNode; className?: string }) => {
@@ -158,6 +159,7 @@ export default function Article() {
 
   return (
     <div className="relative min-h-screen pt-28 pb-32">
+      <ReadingProgress />
       <div className="max-w-7xl mx-auto px-6 lg:px-10 grid grid-cols-1 lg:grid-cols-[1fr_240px] gap-12">
         <article ref={articleRef} className="min-w-0">
           <Link

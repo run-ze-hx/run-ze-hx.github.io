@@ -17,17 +17,17 @@ interface PanelProps {
 }
 
 const VARIANT_BORDER: Record<Variant, string> = {
-  glass: 'rgba(0, 240, 255, 0.25)',
-  outline: 'rgba(255, 46, 160, 0.35)',
-  solid: 'rgba(123, 47, 255, 0.4)',
-  capsule: 'rgba(45, 255, 185, 0.3)',
+  glass: 'rgba(255, 215, 0, 0.25)',
+  outline: 'rgba(139, 115, 85, 0.45)',
+  solid: 'rgba(92, 74, 26, 0.55)',
+  capsule: 'rgba(212, 175, 55, 0.4)',
 };
 
 const VARIANT_GLOW: Record<Variant, string> = {
-  glass: 'rgba(0, 240, 255, 0.18)',
-  outline: 'rgba(255, 46, 160, 0.2)',
-  solid: 'rgba(123, 47, 255, 0.25)',
-  capsule: 'rgba(45, 255, 185, 0.18)',
+  glass: 'rgba(255, 215, 0, 0.18)',
+  outline: 'rgba(139, 115, 85, 0.25)',
+  solid: 'rgba(92, 74, 26, 0.35)',
+  capsule: 'rgba(212, 175, 55, 0.22)',
 };
 
 const SHAPE_CLASS: Record<Shape, string> = {

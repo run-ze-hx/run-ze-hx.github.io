@@ -86,8 +86,8 @@ export default function StackPanel() {
         <svg width={220} height={220} viewBox="0 0 220 220">
           <defs>
             <radialGradient id="radarFill" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#7B2FFF" stopOpacity="0.6" />
-              <stop offset="100%" stopColor="#00F0FF" stopOpacity="0.2" />
+              <stop offset="0%" stopColor="#5C4A1A" stopOpacity="0.6" />
+              <stop offset="100%" stopColor="#FFD700" stopOpacity="0.2" />
             </radialGradient>
             <filter id="glow">
               <feGaussianBlur stdDeviation="2" result="blur" />
@@ -104,7 +104,7 @@ export default function StackPanel() {
               key={i}
               points={ring.map((p) => `${p.x},${p.y}`).join(' ')}
               fill="none"
-              stroke="rgba(123,47,255,0.18)"
+              stroke="rgba(92,74,26,0.25)"
               strokeWidth={1}
               strokeDasharray={i === gridLevels.length - 1 ? '0' : '2 4'}
             />
@@ -118,7 +118,7 @@ export default function StackPanel() {
               y1={110}
               x2={a.x}
               y2={a.y}
-              stroke="rgba(0,240,255,0.15)"
+              stroke="rgba(255,215,0,0.2)"
               strokeWidth={1}
             />
           ))}
@@ -127,7 +127,7 @@ export default function StackPanel() {
           <polygon
             points={polygonPoints}
             fill="url(#radarFill)"
-            stroke="#00F0FF"
+            stroke="#FFD700"
             strokeWidth={1.5}
             filter="url(#glow)"
             style={{
@@ -143,7 +143,7 @@ export default function StackPanel() {
                 cx={p.x}
                 cy={p.y}
                 r={3}
-                fill="#FF2EA0"
+                fill="#8B7355"
                 stroke="#fff"
                 strokeWidth={1}
               />
@@ -170,7 +170,7 @@ export default function StackPanel() {
                 y={a.labelY + 11}
                 textAnchor="middle"
                 fontSize={8}
-                fill="rgba(0,240,255,0.5)"
+                fill="rgba(255,215,0,0.6)"
                 fontFamily="JetBrains Mono, monospace"
               >
                 {skills[i].level}

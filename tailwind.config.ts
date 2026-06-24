@@ -5,23 +5,23 @@ export default {
   theme: {
     extend: {
       colors: {
-        void: '#050510',
-        deep: '#0A0A1F',
-        cyan: { DEFAULT: '#00F0FF', glow: '#7AF5FF' },
-        magenta: { DEFAULT: '#FF2EA0', glow: '#FF8AC8' },
-        violet: { DEFAULT: '#7B2FFF', glow: '#B891FF' },
-        neon: { green: '#2DFFB9', yellow: '#F5FF7A' },
+        void: '#0A0807',
+        deep: '#1C1917',
+        cyan: { DEFAULT: '#FFD700', glow: '#FFF4C8' },
+        magenta: { DEFAULT: '#8B7355', glow: '#CA8A04' },
+        violet: { DEFAULT: '#5C4A1A', glow: '#F4C430' },
+        neon: { green: '#D4AF37', yellow: '#FFF4C8' },
       },
       fontFamily: {
         sans: ['"Noto Sans SC"', 'system-ui', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
-        display: ['"Orbitron"', '"Noto Sans SC"', 'sans-serif'],
+        display: ['"Cormorant"', '"Noto Sans SC"', 'serif'],
       },
       boxShadow: {
-        'cyber-sm': '0 0 12px rgba(0,240,255,0.25)',
-        cyber: '0 0 30px rgba(0,240,255,0.35), 0 0 60px rgba(255,46,160,0.15)',
-        'cyber-lg': '0 0 50px rgba(0,240,255,0.5), 0 0 100px rgba(123,47,255,0.3)',
-        'glass': '0 30px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08)',
+        'cyber-sm': '0 0 12px rgba(255,215,0,0.22)',
+        cyber: '0 0 30px rgba(255,215,0,0.30), 0 0 60px rgba(202,138,4,0.15)',
+        'cyber-lg': '0 0 50px rgba(255,215,0,0.42), 0 0 100px rgba(212,175,55,0.25)',
+        'glass': '0 30px 60px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.06)',
       },
       backdropBlur: {
         xs: '2px',

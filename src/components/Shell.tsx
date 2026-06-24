@@ -4,12 +4,14 @@ import { useLocation } from 'react-router-dom';
 import { useSceneStore } from '@store/sceneStore';
 import { useI18nStore } from '@store/i18nStore';
 import { startPointerTracker, stopPointerTracker } from '@lib/pointerTracker';
+import { routeVariants, easeCinema } from '@lib/motion';
 import LangSwitcher from '@components/ui/LangSwitcher';
 import NavRail from '@components/ui/NavRail';
 import HudClock from '@components/ui/HudClock';
 import HudOverlay from '@components/ui/HudOverlay';
 import HudMarquee from '@components/ui/HudMarquee';
 import ConsoleTerminal from '@components/ConsoleTerminal';
+import CustomCursor from '@components/ui/CustomCursor';
 
 const SceneLayer = lazy(() => import('@3d/SceneLayer'));
 
@@ -20,17 +22,24 @@ function SceneFallback() {
         className="absolute inset-0 opacity-60"
         style={{
           background:
-            'radial-gradient(circle at 30% 30%, rgba(0,240,255,0.15), transparent 50%), radial-gradient(circle at 70% 60%, rgba(255,46,160,0.15), transparent 50%)',
+            'radial-gradient(circle at 30% 30%, rgba(255,215,0,0.15), transparent 50%), radial-gradient(circle at 70% 60%, rgba(139,115,85,0.15), transparent 50%)',
         }}
       />
     </div>
   );
 }
 
-const routeVariants = {
-  initial: { opacity: 0, filter: 'blur(8px)' },
-  enter: { opacity: 1, filter: 'blur(0px)' },
-  exit: { opacity: 0, filter: 'blur(8px)' },
+const sweepVariants = {
+  initial: { scaleX: 0, transformOrigin: '0% 50%' },
+  enter: {
+    scaleX: 1,
+    transition: { duration: 0.45, ease: easeCinema },
+  },
+  exit: {
+    transformOrigin: '100% 50%',
+    scaleX: 0,
+    transition: { duration: 0.45, ease: easeCinema, delay: 0.05 },
+  },
 };
 
 interface ShellProps {
@@ -55,6 +64,7 @@ export default function Shell({ children }: ShellProps) {
 
   return (
     <div className="relative min-h-screen">
+      <CustomCursor />
       <Suspense fallback={<SceneFallback />}>
         <SceneLayer />
       </Suspense>
@@ -84,12 +94,33 @@ export default function Shell({ children }: ShellProps) {
             animate="enter"
             exit="exit"
             variants={routeVariants}
-            transition={{ duration: 0.32, ease: [0.2, 0.8, 0.2, 1] }}
+            transition={{ duration: 0.6, ease: easeCinema }}
           >
             {children}
           </motion.div>
         </AnimatePresence>
       </main>
+
+      {/* Gold sweep mask — wipes across on route change */}
+      <AnimatePresence>
+        <motion.div
+          key={`sweep-${lang}-${location.pathname}`}
+          aria-hidden
+          className="pointer-events-none fixed inset-0 z-[60]"
+          initial="initial"
+          animate="enter"
+          exit="exit"
+          variants={sweepVariants}
+        >
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'linear-gradient(90deg, rgba(10,8,7,0) 0%, rgba(255,215,0,0.18) 50%, rgba(10,8,7,0) 100%)',
+            }}
+          />
+        </motion.div>
+      </AnimatePresence>
 
       <div className="scanline" aria-hidden />
 

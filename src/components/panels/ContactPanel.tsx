@@ -16,7 +16,7 @@ const channels: Channel[] = [
     handle: '@run-ze-hx',
     href: 'https://github.com/run-ze-hx',
     icon: 'github',
-    accent: '#00F0FF',
+    accent: '#FFD700',
   },
   {
     key: 'contact.email',
@@ -24,7 +24,7 @@ const channels: Channel[] = [
     handle: '2161957114@qq.com',
     href: 'mailto:2161957114@qq.com',
     icon: 'mail',
-    accent: '#FF2EA0',
+    accent: '#8B7355',
   },
   {
     key: 'contact.weixin',
@@ -32,7 +32,7 @@ const channels: Channel[] = [
     handle: 'yang',
     href: '#',
     icon: 'wechat',
-    accent: '#2DFFB9',
+    accent: '#D4AF37',
   },
 ];
 

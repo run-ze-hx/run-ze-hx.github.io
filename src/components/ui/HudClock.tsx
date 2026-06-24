@@ -31,7 +31,7 @@ export default function HudClock() {
   return (
     <div className="flex items-center gap-3 font-mono select-none">
       <div className="flex items-center gap-1.5">
-        <span className="w-1.5 h-1.5 rounded-full bg-neon-green shadow-[0_0_6px_#2DFFB9] animate-pulse" />
+        <span className="w-1.5 h-1.5 rounded-full bg-neon-green shadow-[0_0_6px_#D4AF37] animate-pulse" />
         <span className="text-[10px] text-neon-green/80 tracking-widest">
           SYNC
         </span>

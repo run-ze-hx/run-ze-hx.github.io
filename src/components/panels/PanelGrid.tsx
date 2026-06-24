@@ -1,4 +1,5 @@
 import { useCallback, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import {
   DndContext,
   PointerSensor,
@@ -56,6 +57,33 @@ const PANEL_CONFIG: Record<
     shape: 'pill',
     width: 300,
     crt: true,
+  },
+};
+
+const containerVariants = {
+  initial: {},
+  enter: {
+    transition: { staggerChildren: 0.08, delayChildren: 0.15 },
+  },
+  exit: {
+    transition: { staggerChildren: 0.04, staggerDirection: -1 },
+  },
+};
+
+const itemVariants = {
+  initial: { opacity: 0, y: 24, scale: 0.94, filter: 'blur(8px)' },
+  enter: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    filter: 'blur(0px)',
+    transition: { type: 'spring', stiffness: 130, damping: 18, mass: 0.9 },
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.97,
+    filter: 'blur(6px)',
+    transition: { duration: 0.22, ease: [0.4, 0, 1, 1] },
   },
 };
 
@@ -118,13 +146,23 @@ export default function PanelGrid() {
         className="absolute inset-0 pointer-events-none"
         style={{ perspective: '1800px', perspectiveOrigin: 'center 30%' }}
       >
-        <div className="relative" style={{ transformStyle: 'preserve-3d' }}>
+        <motion.div
+          className="relative"
+          style={{ transformStyle: 'preserve-3d' }}
+          variants={containerVariants}
+          initial="initial"
+          animate="enter"
+        >
           {panels.map((p) => {
             const cfg = PANEL_CONFIG[p.id];
             if (!cfg) return null;
             const Renderer = cfg.Component;
             return (
-              <div key={p.id} className="pointer-events-auto">
+              <motion.div
+                key={p.id}
+                className="pointer-events-auto"
+                variants={itemVariants}
+              >
                 <Panel
                   id={p.id}
                   x={p.x}
@@ -137,10 +175,10 @@ export default function PanelGrid() {
                 >
                   <Renderer />
                 </Panel>
-              </div>
+              </motion.div>
             );
           })}
-        </div>
+        </motion.div>
       </div>
     </DndContext>
   );

@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useI18nStore } from '@store/i18nStore';
 import { posts } from '@content/posts';
 
-const ACCENTS = ['#00F0FF', '#FF2EA0', '#7B2FFF', '#2DFFB9', '#F5FF7A'];
+const ACCENTS = ['#FFD700', '#8B7355', '#5C4A1A', '#D4AF37', '#FFF4C8'];
 
 export default function ArticlesPanel() {
   const t = useI18nStore((s) => s.t);

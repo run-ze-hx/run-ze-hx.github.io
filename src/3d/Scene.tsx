@@ -1,10 +1,7 @@
 import { Canvas } from '@react-three/fiber';
 import { AdaptiveDpr, AdaptiveEvents, Preload } from '@react-three/drei';
-import { EffectComposer, Bloom, ChromaticAberration } from '@react-three/postprocessing';
+import { EffectComposer, Bloom, Vignette, Noise } from '@react-three/postprocessing';
 import { BlendFunction } from 'postprocessing';
-import { Vector2 } from 'three';
-import StarDust from './StarDust';
-import Ring from './Ring';
 import DnaHelix from './DnaHelix';
 import SdfCentral from './SdfCentral';
 
@@ -12,7 +9,7 @@ export default function Scene() {
   return (
     <Canvas
       camera={{ position: [0, 1.5, 12], fov: 55, near: 0.1, far: 100 }}
-      dpr={[1, 2]}
+      dpr={[1, 1.5]}
       gl={{
         antialias: true,
         alpha: true,
@@ -22,41 +19,14 @@ export default function Scene() {
       }}
       style={{ position: 'fixed', inset: 0, zIndex: 0 }}
     >
-      <color attach="background" args={['#050510']} />
-      <fog attach="fog" args={['#050510', 14, 38]} />
+      <fog attach="fog" args={['#0A0807', 16, 42]} />
 
-      <ambientLight intensity={0.4} />
-      <pointLight position={[10, 10, 10]} intensity={0.8} color="#00F0FF" />
-      <pointLight position={[-10, -5, -10]} intensity={0.6} color="#FF2EA0" />
+      <ambientLight intensity={0.3} />
+      <pointLight position={[10, 10, 10]} intensity={0.8} color="#FFD700" />
+      <pointLight position={[-10, -5, -10]} intensity={0.5} color="#F4C430" />
 
-      <StarDust count={5000} radius={40} />
-
-      <group>
-        <Ring count={800} radius={5.5} color="#00F0FF" speed={0.5} tilt={0.18} />
-        <Ring
-          count={1200}
-          radius={8}
-          color="#FF2EA0"
-          speed={-0.32}
-          tilt={-0.22}
-          flatten={0.05}
-          size={2.0}
-        />
-        <Ring
-          count={600}
-          radius={10.5}
-          color="#7B2FFF"
-          speed={0.18}
-          tilt={0.28}
-          flatten={0.07}
-          size={2.6}
-        />
-      </group>
-
-      <group>
-        <DnaHelix count={400} rungCount={40} length={28} color="#FF8AC8" radius={0.7} twist={2.5} baseY={2.5} />
-        <DnaHelix count={350} rungCount={35} length={26} color="#7AF5FF" radius={0.6} twist={3.0} baseY={-2} baseZ={1} />
-        <DnaHelix count={300} rungCount={30} length={30} color="#B891FF" radius={0.8} twist={2.0} baseY={0} baseZ={-2} />
+      <group position={[1.8, 0, -1.5]}>
+        <DnaHelix basePairs={36} length={11} radius={0.8} size={2.0} />
       </group>
 
       <SdfCentral />
@@ -67,18 +37,14 @@ export default function Scene() {
 
       <EffectComposer multisampling={0} enableNormalPass={false}>
         <Bloom
-          intensity={0.9}
-          luminanceThreshold={0.15}
-          luminanceSmoothing={0.4}
+          intensity={0.035}
+          luminanceThreshold={0.82}
+          luminanceSmoothing={0.2}
           mipmapBlur
-          radius={0.7}
+          radius={0.1}
         />
-        <ChromaticAberration
-          blendFunction={BlendFunction.NORMAL}
-          offset={new Vector2(0.0008, 0.0012)}
-          radialModulation={false}
-          modulationOffset={0}
-        />
+        <Noise premultiply opacity={0.04} blendFunction={BlendFunction.SOFT_LIGHT} />
+        <Vignette offset={0.25} darkness={0.85} blendFunction={BlendFunction.NORMAL} />
       </EffectComposer>
     </Canvas>
   );

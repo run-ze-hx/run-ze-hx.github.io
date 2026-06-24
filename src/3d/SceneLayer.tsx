@@ -7,7 +7,7 @@ const SceneFallback = () => (
       className="absolute inset-0 opacity-60"
       style={{
         background:
-          'radial-gradient(circle at 30% 30%, rgba(0,240,255,0.15), transparent 50%), radial-gradient(circle at 70% 60%, rgba(255,46,160,0.15), transparent 50%)',
+          'radial-gradient(circle at 30% 30%, rgba(255,215,0,0.15), transparent 50%), radial-gradient(circle at 70% 60%, rgba(139,115,85,0.15), transparent 50%)',
       }}
     />
   </div>

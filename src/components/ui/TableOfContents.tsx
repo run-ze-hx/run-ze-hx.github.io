@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { motion } from 'framer-motion';
 
 interface TocItem {
   id: string;
@@ -44,6 +45,14 @@ export default function TableOfContents({ items }: TocProps) {
     return grouped;
   }, [items]);
 
+  const handleJump = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    e.preventDefault();
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    history.replaceState(null, '', `#${id}`);
+  };
+
   if (!items.length) return null;
 
   return (
@@ -58,14 +67,24 @@ export default function TableOfContents({ items }: TocProps) {
             <li
               key={it.id}
               style={{ paddingLeft: `${(it.level - 2) * 12 + 12}px` }}
+              className="relative"
             >
+              {isActive && (
+                <motion.span
+                  layoutId="toc-active"
+                  className="absolute left-0 top-1 bottom-1 w-[2px] bg-cyan"
+                  style={{ boxShadow: '0 0 8px rgba(255,215,0,0.7)' }}
+                  transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                />
+              )}
               <a
                 href={`#${it.id}`}
+                onClick={(e) => handleJump(e, it.id)}
                 className={[
-                  'block py-1 text-xs transition-all border-l -ml-px',
+                  'block py-1 text-xs transition-all pl-3',
                   isActive
-                    ? 'text-cyan border-cyan pl-3'
-                    : 'text-white/40 hover:text-white border-transparent pl-3 hover:border-white/30',
+                    ? 'text-cyan'
+                    : 'text-white/40 hover:text-white',
                 ].join(' ')}
               >
                 {it.text}

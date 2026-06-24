@@ -22,10 +22,10 @@ export default function HudOverlay() {
       >
         <path
           d="M2 14 V2 H14"
-          stroke="rgba(0,240,255,0.5)"
+          stroke="rgba(255,215,0,0.5)"
           strokeWidth="1.5"
         />
-        <circle cx="2" cy="2" r="1.5" fill="#00F0FF" />
+        <circle cx="2" cy="2" r="1.5" fill="#FFD700" />
       </svg>
       <svg
         className="absolute top-4 right-4"
@@ -36,10 +36,10 @@ export default function HudOverlay() {
       >
         <path
           d="M26 2 H38 V14"
-          stroke="rgba(255,46,160,0.5)"
+          stroke="rgba(139,115,85,0.5)"
           strokeWidth="1.5"
         />
-        <circle cx="38" cy="2" r="1.5" fill="#FF2EA0" />
+        <circle cx="38" cy="2" r="1.5" fill="#8B7355" />
       </svg>
       <svg
         className="absolute bottom-4 left-4"
@@ -50,10 +50,10 @@ export default function HudOverlay() {
       >
         <path
           d="M2 26 V38 H14"
-          stroke="rgba(123,47,255,0.5)"
+          stroke="rgba(92,74,26,0.5)"
           strokeWidth="1.5"
         />
-        <circle cx="2" cy="38" r="1.5" fill="#7B2FFF" />
+        <circle cx="2" cy="38" r="1.5" fill="#5C4A1A" />
       </svg>
       <svg
         className="absolute bottom-4 right-4"
@@ -64,10 +64,10 @@ export default function HudOverlay() {
       >
         <path
           d="M26 38 H38 V26"
-          stroke="rgba(45,255,185,0.5)"
+          stroke="rgba(212,175,55,0.5)"
           strokeWidth="1.5"
         />
-        <circle cx="38" cy="38" r="1.5" fill="#2DFFB9" />
+        <circle cx="38" cy="38" r="1.5" fill="#D4AF37" />
       </svg>
 
       {/* Left edge tick marks */}
@@ -103,7 +103,7 @@ export default function HudOverlay() {
         className="absolute inset-0"
         style={{
           background:
-            'radial-gradient(ellipse at center, transparent 40%, rgba(5,5,16,0.4) 100%)',
+            'radial-gradient(ellipse at center, transparent 40%, rgba(10,8,7,0.4) 100%)',
         }}
       />
     </div>

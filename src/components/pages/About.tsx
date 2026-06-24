@@ -32,22 +32,22 @@ const timeline = [
 const skills = [
   {
     title: '架构层',
-    color: '#00F0FF',
+    color: '#FFD700',
     items: ['前端全局架构', '三层组件拆分', '路由守卫', '代码分割策略'],
   },
   {
     title: '工程层',
-    color: '#FF2EA0',
+    color: '#8B7355',
     items: ['Vite 构建体系', 'Axios 封装', 'Token 管理', '混合加密'],
   },
   {
     title: '原理层',
-    color: '#7B2FFF',
+    color: '#5C4A1A',
     items: ['React Fiber', '浏览器渲染管线', 'Event Loop', 'JS 错误捕获'],
   },
   {
     title: '业务层',
-    color: '#2DFFB9',
+    color: '#D4AF37',
     items: ['AI 评标系统', '文件分片上传', '多角色路由', '评标桌面'],
   },
 ];
@@ -128,7 +128,7 @@ export default function About() {
               <li key={i} className="mb-10 pl-8 relative">
                 <span
                   className="absolute -left-[7px] top-2 w-3 h-3 rounded-full bg-cyan"
-                  style={{ boxShadow: '0 0 12px #00F0FF' }}
+                  style={{ boxShadow: '0 0 12px #FFD700' }}
                 />
                 <div className="flex items-center gap-3 mb-1">
                   <span className="font-mono text-xs text-magenta tracking-widest">

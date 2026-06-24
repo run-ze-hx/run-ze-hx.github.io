@@ -65,15 +65,15 @@ float smin(float a, float b, float k) {
 
 float map(vec3 p) {
   float t = uTime * 0.5;
-  vec3 b1 = vec3(sin(t)*0.6, cos(t*1.3)*0.4, sin(t*0.7)*0.5);
-  vec3 b2 = vec3(cos(t*1.1)*0.5, sin(t*0.9)*0.5, cos(t*1.5)*0.3);
-  vec3 b3 = vec3(sin(t*0.8+1.0)*0.7, sin(t*1.2)*0.3, cos(t*0.6+2.0)*0.5);
-  vec3 b4 = vec3(cos(t*1.4+3.0)*0.4, cos(t*0.5+1.0)*0.6, sin(t*1.1+1.5)*0.4);
+  vec3 b1 = vec3(sin(t)*0.42, cos(t*1.3)*0.28, sin(t*0.7)*0.35);
+  vec3 b2 = vec3(cos(t*1.1)*0.35, sin(t*0.9)*0.35, cos(t*1.5)*0.21);
+  vec3 b3 = vec3(sin(t*0.8+1.0)*0.49, sin(t*1.2)*0.21, cos(t*0.6+2.0)*0.35);
+  vec3 b4 = vec3(cos(t*1.4+3.0)*0.28, cos(t*0.5+1.0)*0.42, sin(t*1.1+1.5)*0.28);
 
-  float d = sdSphere(p - b1, 0.55);
-  d = smin(d, sdSphere(p - b2, 0.5), 0.5);
-  d = smin(d, sdSphere(p - b3, 0.6), 0.5);
-  d = smin(d, sdSphere(p - b4, 0.45), 0.5);
+  float d = sdSphere(p - b1, 0.38);
+  d = smin(d, sdSphere(p - b2, 0.34), 0.35);
+  d = smin(d, sdSphere(p - b3, 0.4), 0.35);
+  d = smin(d, sdSphere(p - b4, 0.3), 0.35);
 
   float n = snoise(p * 1.5 + vec3(t * 0.6));
   d += n * uDistort;
@@ -91,15 +91,28 @@ vec3 calcNormal(vec3 p) {
 }
 
 void main() {
-  vec2 uv = (vUv - 0.5) * vec2(uAspect, 1.0) * 2.0;
+  vec2 uv = (vUv - 0.5) * 2.0;
 
   vec3 ro = uCamPos;
-  vec3 rd = normalize(vec3(uv, -1.5));
+  float focal = 1.6;
+  vec3 rd = normalize(vec3(uv.x * uAspect, uv.y, -focal));
 
-  float t = 0.0;
+  // Bounding sphere around the metaball cluster.
+  // Most background pixels miss entirely — skip the march for them.
+  float boundingR = 1.5;
+  float b = dot(ro, rd);
+  float c = dot(ro, ro) - boundingR * boundingR;
+  float disc = b * b - c;
+  if (disc < 0.0) {
+    gl_FragColor = vec4(0.0);
+    return;
+  }
+  float tEnter = max(-b - sqrt(disc), 0.0);
+
+  float t = tEnter;
   float d = 0.0;
   bool hit = false;
-  for (int i = 0; i < 96; i++) {
+  for (int i = 0; i < 48; i++) {
     vec3 p = ro + rd * t;
     d = map(p);
     if (d < 0.001) { hit = true; break; }
@@ -118,14 +131,14 @@ void main() {
 
   float fresnel = pow(1.0 - max(dot(n, viewDir), 0.0), 2.5);
 
-  float mixT = snoise(p * 2.0 + uTime * 0.3) * 0.5 + 0.5;
+  float mixT = snoise(p * 1.6 + uTime * 0.25) * 0.5 + 0.5;
   vec3 base = mix(uColorA, uColorB, mixT);
   vec3 col = mix(base, uColorC, fresnel);
-  col += fresnel * 0.6;
+  col += fresnel * 0.45;
 
   vec3 lightDir = normalize(vec3(0.5, 0.8, 0.5));
   float spec = pow(max(dot(reflect(-lightDir, n), viewDir), 0.0), 32.0);
-  col += spec * 0.4;
+  col += spec * 0.35;
 
   gl_FragColor = vec4(col, 1.0);
 }

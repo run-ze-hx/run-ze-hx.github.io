@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useI18nStore } from '@store/i18nStore';
 
 const stats = [
@@ -5,6 +6,46 @@ const stats = [
   { value: '57', label: 'NOTES' },
   { value: '8', label: 'POSTS' },
 ];
+
+function useCountUp(value: string, duration = 1200, delay = 450) {
+  const match = value.match(/^(\d+)(.*)$/);
+  const target = match ? parseInt(match[1], 10) : 0;
+  const suffix = match ? match[2] : '';
+  const [display, setDisplay] = useState(0);
+  useEffect(() => {
+    let raf = 0;
+    let startTime = 0;
+    const startAt = performance.now() + delay;
+    const tick = (now: number) => {
+      if (now < startAt) {
+        raf = requestAnimationFrame(tick);
+        return;
+      }
+      if (!startTime) startTime = now;
+      const t = Math.min((now - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - t, 3);
+      setDisplay(Math.round(eased * target));
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [target, duration, delay]);
+  return `${display}${suffix}`;
+}
+
+function Stat({ value, label }: { value: string; label: string }) {
+  const display = useCountUp(value);
+  return (
+    <div className="text-center">
+      <div className="font-display text-xl font-black text-cyan neon-text">
+        {display}
+      </div>
+      <div className="font-mono text-[9px] text-white/40 tracking-widest mt-0.5">
+        {label}
+      </div>
+    </div>
+  );
+}
 
 export default function ProfilePanel() {
   const t = useI18nStore((s) => s.t);
@@ -17,7 +58,7 @@ export default function ProfilePanel() {
           className="absolute inset-0"
           style={{
             background:
-              'linear-gradient(135deg, rgba(0,240,255,0.35) 0%, rgba(123,47,255,0.25) 50%, rgba(255,46,160,0.35) 100%)',
+              'linear-gradient(135deg, rgba(255,215,0,0.35) 0%, rgba(92,74,26,0.55) 50%, rgba(139,115,85,0.45) 100%)',
           }}
         />
         {/* scanlines */}
@@ -32,7 +73,7 @@ export default function ProfilePanel() {
           ID://YFT-001
         </div>
         <div className="absolute top-2 right-3 flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-neon-green shadow-[0_0_6px_#2DFFB9] animate-pulse" />
+          <span className="w-1.5 h-1.5 rounded-full bg-neon-green shadow-[0_0_6px_#D4AF37] animate-pulse" />
           <span className="font-mono text-[9px] tracking-widest text-neon-green/80">
             ONLINE
           </span>
@@ -46,7 +87,7 @@ export default function ProfilePanel() {
             className="absolute inset-0 rounded-full"
             style={{
               background:
-                'conic-gradient(from 0deg, #00F0FF, #7B2FFF, #FF2EA0, #00F0FF)',
+                'conic-gradient(from 0deg, #FFD700, #8B7355, #FFF4C8, #FFD700)',
               animation: 'spin-slow 20s linear infinite',
             }}
           />
@@ -80,14 +121,7 @@ export default function ProfilePanel() {
       {/* Stats row */}
       <div className="mx-5 mt-4 grid grid-cols-3 gap-2 py-3 border-y border-cyan/15">
         {stats.map((s) => (
-          <div key={s.label} className="text-center">
-            <div className="font-display text-xl font-black text-cyan neon-text">
-              {s.value}
-            </div>
-            <div className="font-mono text-[9px] text-white/40 tracking-widest mt-0.5">
-              {s.label}
-            </div>
-          </div>
+          <Stat key={s.label} value={s.value} label={s.label} />
         ))}
       </div>
 

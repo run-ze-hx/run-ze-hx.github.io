@@ -1,8 +1,45 @@
 import { useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { useSceneStore } from '@store/sceneStore';
 import { useI18nStore } from '@store/i18nStore';
 import { useLayoutStore } from '@store/layoutStore';
 import PanelGrid from '@components/panels/PanelGrid';
+
+const heroContainer = {
+  initial: {},
+  enter: { transition: { staggerChildren: 0.14, delayChildren: 0.35 } },
+};
+
+const heroTag = {
+  initial: { opacity: 0, y: -8, filter: 'blur(4px)' },
+  enter: {
+    opacity: 1,
+    y: 0,
+    filter: 'blur(0px)',
+    transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
+  },
+};
+
+const heroTitle = {
+  initial: { opacity: 0, y: 36, scale: 0.92, filter: 'blur(18px)' },
+  enter: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    filter: 'blur(0px)',
+    transition: { type: 'spring', stiffness: 80, damping: 16, mass: 1.1 },
+  },
+};
+
+const heroSub = {
+  initial: { opacity: 0, y: 14, filter: 'blur(6px)' },
+  enter: {
+    opacity: 1,
+    y: 0,
+    filter: 'blur(0px)',
+    transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] },
+  },
+};
 
 export default function Home() {
   const setRouteMode = useSceneStore((s) => s.setRouteMode);
@@ -18,20 +55,37 @@ export default function Home() {
       <PanelGrid />
 
       <div className="absolute inset-x-0 top-[14%] grid place-items-center pointer-events-none">
-        <div className="text-center pointer-events-none">
-          <div className="font-mono text-xs text-cyan/70 tracking-[0.5em] mb-6 animate-pulse">
+        <motion.div
+          className="text-center pointer-events-none"
+          variants={heroContainer}
+          initial="initial"
+          animate="enter"
+        >
+          <motion.div
+            className="font-mono text-xs text-cyan/70 tracking-[0.5em] mb-6 animate-pulse"
+            variants={heroTag}
+          >
             YFT · OS · v0.1
-          </div>
-          <h1 className="font-display text-6xl md:text-8xl font-black tracking-tight neon-text text-cyan">
+          </motion.div>
+          <motion.h1
+            className="font-display text-6xl md:text-8xl font-black tracking-tight neon-text text-cyan"
+            variants={heroTitle}
+          >
             {t('app.title')}
-          </h1>
-          <p className="mt-6 font-mono text-sm md:text-base text-white/70 tracking-[0.3em]">
+          </motion.h1>
+          <motion.p
+            className="mt-6 font-mono text-sm md:text-base text-white/70 tracking-[0.3em]"
+            variants={heroSub}
+          >
             {t('app.role').toUpperCase()}
-          </p>
-          <p className="mt-2 font-mono text-xs md:text-sm text-magenta/80 tracking-widest">
+          </motion.p>
+          <motion.p
+            className="mt-2 font-mono text-xs md:text-sm text-magenta/80 tracking-widest"
+            variants={heroSub}
+          >
             {t('app.tagline')}
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
       </div>
 
       {/* Status bar — split bottom-left and bottom-right, no overlap */}

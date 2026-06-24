@@ -7,11 +7,15 @@ import particleFrag from '@3d/shaders/particle.frag.glsl?raw';
 interface StarDustProps {
   count?: number;
   radius?: number;
+  size?: number;
+  color?: string;
 }
 
 export default function StarDust({
   count = 5000,
   radius = 40,
+  size = 1.4,
+  color = '#FFF4C8',
 }: StarDustProps) {
   const matRef = useRef<THREE.ShaderMaterial>(null);
   const { gl } = useThree();
@@ -42,10 +46,10 @@ export default function StarDust({
       uPixelRatio: {
         value: Math.min(gl.getPixelRatio(), 2),
       },
-      uSize: { value: 1.4 },
-      uColor: { value: new THREE.Color('#7AF5FF') },
+      uSize: { value: size },
+      uColor: { value: new THREE.Color(color) },
     }),
-    [gl],
+    [gl, size, color],
   );
 
   useFrame((_, delta) => {
