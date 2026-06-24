@@ -30,10 +30,12 @@ body {
   background-color: var(--color-void);
   background-image:
     linear-gradient(rgba(10, 8, 7, 0.2), rgba(10, 8, 7, 0.45)),
-    url('/textures/bg-obsidian.png');
+    image-set(
+      url('/textures/bg-obsidian.webp') type('image/webp'),
+      url('/textures/bg-obsidian.png') type('image/png')
+    );
   background-size: cover;
   background-position: center center;
-  background-attachment: fixed;
   background-repeat: no-repeat;
   color: var(--color-text);
   font-family: 'Noto Sans SC', system-ui, sans-serif;
